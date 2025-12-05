@@ -94,8 +94,8 @@ function Home() {
       <nav className="navbar" style={{ opacity: isWarping ? 0 : 1, transition: 'opacity 0.5s' }}>
         <div className="nav-logo">Village Numérique Résistant NIRD</div>
         <div className="nav-links">
-          <a href="#challenge1" className="nav-link">Challenge 1</a>
-          <a href="#challenge2" className="nav-link">Challenge 2</a>
+          <a href="#challenge1" className="nav-link">Les femmes dans le numérique</a>
+          <a href="#challenge2" className="nav-link">La ligues des extensions</a>
         </div>
       </nav>
 

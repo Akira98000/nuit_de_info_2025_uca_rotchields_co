@@ -168,7 +168,7 @@ const Village = () => {
                     position: 'absolute',
                     pointerEvents: 'none'
                 }}>
-                    Vous allez vous incarner en tant qu'étudiant qui veut combattre les Big Data.
+                    Vous êtes l’étudiant chargé de protéger votre école face aux Big Tech.
                 </h1>
 
                 {/* Text 2 */}
@@ -181,7 +181,7 @@ const Village = () => {
                     position: 'absolute',
                     pointerEvents: 'none'
                 }}>
-                    Votre école compte sur vous pour apprendre au maximum sur l'association NIRD.
+                    Votre mission : explorer le village, comprendre la démarche NIRD et renforcer l’autonomie numérique de votre établissement.
                 </h1>
 
                 {/* Controls & Rules Screen */}
@@ -213,12 +213,12 @@ const Village = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <div style={{ border: '1px solid white', padding: '0.5rem 1rem', borderRadius: '5px' }}>Z</div>
+                                    <div style={{ border: '1px solid white', padding: '0.5rem 1rem', borderRadius: '5px' }}>↑</div>
                                 </div>
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <div style={{ border: '1px solid white', padding: '0.5rem 1rem', borderRadius: '5px' }}>Q</div>
-                                    <div style={{ border: '1px solid white', padding: '0.5rem 1rem', borderRadius: '5px' }}>S</div>
-                                    <div style={{ border: '1px solid white', padding: '0.5rem 1rem', borderRadius: '5px' }}>D</div>
+                                    <div style={{ border: '1px solid white', padding: '0.5rem 1rem', borderRadius: '5px' }}>←</div>
+                                    <div style={{ border: '1px solid white', padding: '0.5rem 1rem', borderRadius: '5px' }}>↓</div>
+                                    <div style={{ border: '1px solid white', padding: '0.5rem 1rem', borderRadius: '5px' }}>→</div>
                                 </div>
                                 <span>Se déplacer</span>
                             </div>
@@ -340,7 +340,7 @@ const Village = () => {
                         e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
                     }}
                 >
-                     Retour à l'accueil
+                    Retour à l'accueil
                 </button>
             )}
 
