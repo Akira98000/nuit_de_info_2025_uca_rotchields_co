@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Link } from 'react-router-dom';
 import './App.css';
 import StarWarp from './components/StarWarp';
 import Village from './pages/Village';
@@ -11,6 +11,7 @@ import GooglePage from './pages/GooglePage';
 import CabanePage from './pages/CabanePage';
 import SchoolPage from './pages/SchoolPage';
 import LibraryPage from './pages/LibraryPage';
+import PodcastPage from './pages/PodcastPage';
 
 const typewriterPhrases = [
   "Donne du pouvoir numérique à ton établissement",
@@ -85,8 +86,8 @@ function Home({ onEnterVillage }: { onEnterVillage: () => void }) {
       <nav className="navbar" style={{ transition: 'opacity 0.5s' }}>
         <div className="nav-logo">Rotschield & Co</div>
         <div className="nav-links">
-          <a href="#challenge1" className="nav-link">1. Les femmes dans le numérique</a>
-          <a href="#challenge2" className="nav-link">2.La ligues des extensions</a>
+          <Link to="/podcast" className="nav-link">1. Les femmes dans le numérique</Link>
+          <a href="https://github.com/MathieuDvv/NDLI_ChromeExtension_Trial" className="nav-link">2.La ligues des extensions</a>
         </div>
       </nav>
 
@@ -115,6 +116,7 @@ function AppContent() {
   // Game State
   const [isWarping, setIsWarping] = useState(false);
   const isHome = location.pathname === '/' && !isWarping;
+  const isPodcast = location.pathname === '/podcast';
 
   const [showContentPage, setShowContentPage] = useState(false);
   const [savedPosition, setSavedPosition] = useState<PlayerPosition | null>(null);
@@ -126,7 +128,7 @@ function AppContent() {
     // Réinitialiser les objectifs et scores à chaque entrée dans le village
     setVisitedZones(new Set());
     setScores({});
-    
+
     setIsWarping(true);
     setTimeout(() => {
       navigate('/village');
@@ -154,7 +156,7 @@ function AppContent() {
     console.log('Opening page from position:', position, 'Zone:', zoneType);
     setSavedPosition(position);
     setCurrentZone(zoneType);
-    
+
     // 1. D'abord activer le StarWarp pour couvrir l'écran
     setIsWarping(true);
 
@@ -162,7 +164,7 @@ function AppContent() {
     setTimeout(() => {
       // 3. Maintenant que le StarWarp couvre l'écran, afficher la page de contenu
       setShowContentPage(true);
-      
+
       // 4. Continuer l'animation warp un peu, puis la désactiver
       setTimeout(() => {
         setIsWarping(false);
@@ -174,13 +176,13 @@ function AppContent() {
   const handleBackToVillage = useCallback(() => {
     // 1. D'abord activer le StarWarp pour couvrir l'écran
     setIsWarping(true);
-    
+
     // 2. Attendre que le StarWarp soit complètement visible (500ms de transition)
     //    AVANT de cacher la page de contenu
     setTimeout(() => {
       // 3. Maintenant que le StarWarp couvre l'écran, on peut cacher la page
       setShowContentPage(false);
-      
+
       // 4. Continuer l'animation warp un peu, puis la désactiver
       setTimeout(() => {
         setIsWarping(false);
@@ -206,22 +208,24 @@ function AppContent() {
     <>
       <StarWarp isActive={isWarping} />
 
-      {/* Scène 3D Persistante */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: -1,
-        pointerEvents: showContentPage ? 'none' : 'auto'
-      }}>
-        <ThreeScene
-          isHome={isHome}
-          onOpenPage={handleOpenPage}
-          initialPosition={savedPosition}
-        />
-      </div>
+      {/* Scène 3D Persistante - Cachée sur la page podcast */}
+      {!isPodcast && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: -1,
+          pointerEvents: showContentPage ? 'none' : 'auto'
+        }}>
+          <ThreeScene
+            isHome={isHome}
+            onOpenPage={handleOpenPage}
+            initialPosition={savedPosition}
+          />
+        </div>
+      )}
 
       {/* Page de contenu (Overlay) */}
       {showContentPage && (
@@ -257,6 +261,7 @@ function AppContent() {
             isWarping={isWarping}
           />
         } />
+        <Route path="/podcast" element={<PodcastPage onBack={() => navigate('/')} />} />
       </Routes>
     </>
   );
