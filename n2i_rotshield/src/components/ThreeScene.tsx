@@ -61,7 +61,7 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
     const snackbarSchoolRef = useRef<HTMLDivElement | null>(null);
     const snackbarLibraryRef = useRef<HTMLDivElement | null>(null);
     const onOpenPageRef = useRef(onOpenPage);
-    
+
     // Mettre à jour la référence quand le callback change
     useEffect(() => {
         onOpenPageRef.current = onOpenPage;
@@ -101,24 +101,6 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
         renderer.toneMappingExposure = 1.0;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         mountRef.current.appendChild(renderer.domElement);
-
-        // ============================================
-        // AFFICHAGE DES COORDONNÉES DU JOUEUR
-        // ============================================
-        const coordsDisplay = document.createElement('div');
-        coordsDisplay.style.position = 'absolute';
-        coordsDisplay.style.top = '10px';
-        coordsDisplay.style.left = '10px';
-        coordsDisplay.style.color = '#ffffff';
-        coordsDisplay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        coordsDisplay.style.padding = '10px 15px';
-        coordsDisplay.style.borderRadius = '8px';
-        coordsDisplay.style.fontFamily = 'monospace';
-        coordsDisplay.style.fontSize = '14px';
-        coordsDisplay.style.zIndex = '1000';
-        coordsDisplay.style.pointerEvents = 'none';
-        coordsDisplay.innerHTML = 'Position: X: 0.00 | Y: 0.00 | Z: 0.00';
-        mountRef.current.appendChild(coordsDisplay);
 
         // ============================================
         // SNACKBAR POUR LA ZONE INTERACTIVE
@@ -223,33 +205,33 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
         // Fonction pour vérifier si le joueur est dans la zone "Google Company"
         const checkGoogleCompanyZone = (position: THREE.Vector3): boolean => {
             return position.x >= GOOGLE_COMPANY_ZONE.minX &&
-                   position.x <= GOOGLE_COMPANY_ZONE.maxX &&
-                   position.z >= GOOGLE_COMPANY_ZONE.minZ &&
-                   position.z <= GOOGLE_COMPANY_ZONE.maxZ;
+                position.x <= GOOGLE_COMPANY_ZONE.maxX &&
+                position.z >= GOOGLE_COMPANY_ZONE.minZ &&
+                position.z <= GOOGLE_COMPANY_ZONE.maxZ;
         };
 
         // Fonction pour vérifier si le joueur est dans la zone "Cabane"
         const checkCabaneZone = (position: THREE.Vector3): boolean => {
             return position.x >= CABANE_ZONE.minX &&
-                   position.x <= CABANE_ZONE.maxX &&
-                   position.z >= CABANE_ZONE.minZ &&
-                   position.z <= CABANE_ZONE.maxZ;
+                position.x <= CABANE_ZONE.maxX &&
+                position.z >= CABANE_ZONE.minZ &&
+                position.z <= CABANE_ZONE.maxZ;
         };
 
         // Fonction pour vérifier si le joueur est dans la zone "School"
         const checkSchoolZone = (position: THREE.Vector3): boolean => {
             return position.x >= SCHOOL_ZONE.minX &&
-                   position.x <= SCHOOL_ZONE.maxX &&
-                   position.z >= SCHOOL_ZONE.minZ &&
-                   position.z <= SCHOOL_ZONE.maxZ;
+                position.x <= SCHOOL_ZONE.maxX &&
+                position.z >= SCHOOL_ZONE.minZ &&
+                position.z <= SCHOOL_ZONE.maxZ;
         };
 
         // Fonction pour vérifier si le joueur est dans la zone "Library"
         const checkLibraryZone = (position: THREE.Vector3): boolean => {
             return position.x >= LIBRARY_ZONE.minX &&
-                   position.x <= LIBRARY_ZONE.maxX &&
-                   position.z >= LIBRARY_ZONE.minZ &&
-                   position.z <= LIBRARY_ZONE.maxZ;
+                position.x <= LIBRARY_ZONE.maxX &&
+                position.z >= LIBRARY_ZONE.minZ &&
+                position.z <= LIBRARY_ZONE.maxZ;
         };
 
         // Fonction pour afficher/masquer la snackbar
@@ -513,26 +495,26 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
         );
 
         loader.load(
-            '/player.glb',
+            '/player2.glb',
             (gltf) => {
                 player = gltf.scene;
                 playerRef.current = player;
-                
+
                 if (initialPosition) {
                     player.position.set(initialPosition.x, initialPosition.y, initialPosition.z);
                     player.rotation.y = initialPosition.rotationY;
                 } else {
                     player.position.set(0, 0, 0);
                 }
-                player.scale.set(0.1, 0.1, 0.1);
+                player.scale.set(0.45, 0.45, 0.45);
 
                 gltf.scene.children.forEach((child) => {
-                    child.rotation.z = -Math.PI; 
+                    child.rotation.z = -Math.PI;
                 });
 
                 player.traverse((child) => {
                     if (child.name.toLowerCase().includes('root') || child.name.toLowerCase().includes('armature')) {
-                        child.rotation.x = Math.PI / 2; 
+                        child.rotation.x = Math.PI / 2;
                         console.log('Rootbone trouvé et rotation appliquée:', child.name);
                     }
                 });
@@ -545,7 +527,7 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                             const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
                             materials.forEach((mat) => {
                                 mat.transparent = false;
-                                mat.opacity = 1; 
+                                mat.opacity = 1;
                                 mat.alphaTest = 0;
                                 mat.depthWrite = true;
                                 mat.needsUpdate = true;
@@ -588,13 +570,6 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                     idleAction.play();
                     currentAction = idleAction;
                 }
-
-                const axesHelper = new THREE.AxesHelper(5);
-                player.add(axesHelper);
-
-                const forwardDir = new THREE.Vector3(0, 0, -1);
-                const arrowHelper = new THREE.ArrowHelper(forwardDir, new THREE.Vector3(0, 1, 0), 3, 0xff00ff, 0.5, 0.3);
-                player.add(arrowHelper);
 
                 scene.add(player);
                 console.log('Player chargé avec succès!');
@@ -651,7 +626,7 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                 event.preventDefault();
                 keys[event.code as keyof typeof keys] = true;
             }
-            
+
             // Gestion de la touche E pour ouvrir la page
             if (event.code === 'KeyE' && onOpenPageRef.current && player) {
                 const currentPosition: PlayerPosition = {
@@ -660,7 +635,7 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                     z: player.position.z,
                     rotationY: player.rotation.y
                 };
-                
+
                 if (isInZoneRef.current) {
                     console.log('Touche E pressée dans la zone Google Company!');
                     onOpenPageRef.current(currentPosition, 'google');
@@ -778,9 +753,6 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                 const lookAtTarget = player.position.clone().add(cameraLookOffset);
                 camera.lookAt(lookAtTarget);
 
-                // Mettre à jour l'affichage des coordonnées
-                coordsDisplay.innerHTML = `Position: X: ${player.position.x.toFixed(2)} | Y: ${player.position.y.toFixed(2)} | Z: ${player.position.z.toFixed(2)}`;
-
                 // Vérifier si le joueur est dans la zone "Google Company"
                 const inZone = checkGoogleCompanyZone(player.position);
                 // Toujours mettre à jour la snackbar pour garantir la synchronisation
@@ -841,9 +813,6 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
             if (mountRef.current) {
                 if (renderer.domElement) {
                     mountRef.current.removeChild(renderer.domElement);
-                }
-                if (coordsDisplay) {
-                    mountRef.current.removeChild(coordsDisplay);
                 }
                 if (snackbar) {
                     mountRef.current.removeChild(snackbar);
