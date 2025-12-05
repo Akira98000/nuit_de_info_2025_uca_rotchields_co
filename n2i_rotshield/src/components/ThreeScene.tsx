@@ -9,8 +9,11 @@ interface PlayerPosition {
     rotationY: number;
 }
 
+// Types de zones interactives
+type ZoneType = 'google' | 'cabane' | 'school' | 'library';
+
 interface ThreeSceneProps {
-    onOpenPage?: (position: PlayerPosition) => void;
+    onOpenPage?: (position: PlayerPosition, zoneType: ZoneType) => void;
     initialPosition?: PlayerPosition | null;
 }
 
@@ -430,7 +433,7 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
             KeyE: false
         };
 
-        const moveSpeed = 0.1;
+        const moveSpeed = 0.05;
         const rotationSpeed = 0.05;
 
         // ============================================
@@ -515,7 +518,6 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                 player = gltf.scene;
                 playerRef.current = player;
                 
-                // Utiliser la position initiale si fournie, sinon position par défaut
                 if (initialPosition) {
                     player.position.set(initialPosition.x, initialPosition.y, initialPosition.z);
                     player.rotation.y = initialPosition.rotationY;
@@ -525,13 +527,12 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                 player.scale.set(0.1, 0.1, 0.1);
 
                 gltf.scene.children.forEach((child) => {
-                    child.rotation.z = -Math.PI; // 2x Math.PI / 2 = 180°
+                    child.rotation.z = -Math.PI; 
                 });
 
-                // Appliquer rotation de 90° sur le rootbone.x
                 player.traverse((child) => {
                     if (child.name.toLowerCase().includes('root') || child.name.toLowerCase().includes('armature')) {
-                        child.rotation.x = Math.PI / 2; // 90°
+                        child.rotation.x = Math.PI / 2; 
                         console.log('Rootbone trouvé et rotation appliquée:', child.name);
                     }
                 });
@@ -544,7 +545,7 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                             const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
                             materials.forEach((mat) => {
                                 mat.transparent = false;
-                                mat.opacity = 1;
+                                mat.opacity = 1; 
                                 mat.alphaTest = 0;
                                 mat.depthWrite = true;
                                 mat.needsUpdate = true;
@@ -651,52 +652,28 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                 keys[event.code as keyof typeof keys] = true;
             }
             
-            // Gestion de la touche E pour ouvrir la page (Google Company)
-            if (event.code === 'KeyE' && isInZoneRef.current && onOpenPageRef.current && player) {
-                console.log('Touche E pressée dans la zone Google Company!');
+            // Gestion de la touche E pour ouvrir la page
+            if (event.code === 'KeyE' && onOpenPageRef.current && player) {
                 const currentPosition: PlayerPosition = {
                     x: player.position.x,
                     y: player.position.y,
                     z: player.position.z,
                     rotationY: player.rotation.y
                 };
-                onOpenPageRef.current(currentPosition);
-            }
-            
-            // Gestion de la touche E pour ouvrir la page (Cabane)
-            if (event.code === 'KeyE' && isInCabaneZoneRef.current && onOpenPageRef.current && player) {
-                console.log('Touche E pressée dans la zone Cabane!');
-                const currentPosition: PlayerPosition = {
-                    x: player.position.x,
-                    y: player.position.y,
-                    z: player.position.z,
-                    rotationY: player.rotation.y
-                };
-                onOpenPageRef.current(currentPosition);
-            }
-            
-            // Gestion de la touche E pour ouvrir la page (School)
-            if (event.code === 'KeyE' && isInSchoolZoneRef.current && onOpenPageRef.current && player) {
-                console.log('Touche E pressée dans la zone School!');
-                const currentPosition: PlayerPosition = {
-                    x: player.position.x,
-                    y: player.position.y,
-                    z: player.position.z,
-                    rotationY: player.rotation.y
-                };
-                onOpenPageRef.current(currentPosition);
-            }
-            
-            // Gestion de la touche E pour ouvrir la page (Library)
-            if (event.code === 'KeyE' && isInLibraryZoneRef.current && onOpenPageRef.current && player) {
-                console.log('Touche E pressée dans la zone Library!');
-                const currentPosition: PlayerPosition = {
-                    x: player.position.x,
-                    y: player.position.y,
-                    z: player.position.z,
-                    rotationY: player.rotation.y
-                };
-                onOpenPageRef.current(currentPosition);
+                
+                if (isInZoneRef.current) {
+                    console.log('Touche E pressée dans la zone Google Company!');
+                    onOpenPageRef.current(currentPosition, 'google');
+                } else if (isInCabaneZoneRef.current) {
+                    console.log('Touche E pressée dans la zone Cabane!');
+                    onOpenPageRef.current(currentPosition, 'cabane');
+                } else if (isInSchoolZoneRef.current) {
+                    console.log('Touche E pressée dans la zone School!');
+                    onOpenPageRef.current(currentPosition, 'school');
+                } else if (isInLibraryZoneRef.current) {
+                    console.log('Touche E pressée dans la zone Library!');
+                    onOpenPageRef.current(currentPosition, 'library');
+                }
             }
         };
 
@@ -890,4 +867,4 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
 };
 
 export default ThreeScene;
-export type { PlayerPosition };
+export type { PlayerPosition, ZoneType };
