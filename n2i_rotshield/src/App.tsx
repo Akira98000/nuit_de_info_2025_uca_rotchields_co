@@ -112,10 +112,10 @@ function Home({ onEnterVillage }: { onEnterVillage: () => void }) {
 function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
-  const isHome = location.pathname === '/';
-
   // Game State
   const [isWarping, setIsWarping] = useState(false);
+  const isHome = location.pathname === '/' && !isWarping;
+
   const [showContentPage, setShowContentPage] = useState(false);
   const [savedPosition, setSavedPosition] = useState<PlayerPosition | null>(null);
   const [currentZone, setCurrentZone] = useState<ZoneType>('google');
@@ -123,6 +123,10 @@ function AppContent() {
   const [scores, setScores] = useState<Record<string, number>>({});
 
   const handleEnterVillage = () => {
+    // Réinitialiser les objectifs et scores à chaque entrée dans le village
+    setVisitedZones(new Set());
+    setScores({});
+    
     setIsWarping(true);
     setTimeout(() => {
       navigate('/village');
@@ -150,24 +154,38 @@ function AppContent() {
     console.log('Opening page from position:', position, 'Zone:', zoneType);
     setSavedPosition(position);
     setCurrentZone(zoneType);
+    
+    // 1. D'abord activer le StarWarp pour couvrir l'écran
     setIsWarping(true);
 
-    // Après l'animation de warp, afficher la page
+    // 2. Attendre que le StarWarp soit complètement visible (500ms de transition)
     setTimeout(() => {
+      // 3. Maintenant que le StarWarp couvre l'écran, afficher la page de contenu
       setShowContentPage(true);
-      setIsWarping(false);
-    }, 2000);
+      
+      // 4. Continuer l'animation warp un peu, puis la désactiver
+      setTimeout(() => {
+        setIsWarping(false);
+      }, 800);
+    }, 500);
   }, []);
 
   // Gestion du retour au village
   const handleBackToVillage = useCallback(() => {
+    // 1. D'abord activer le StarWarp pour couvrir l'écran
     setIsWarping(true);
-    setShowContentPage(false);
-
-    // Après l'animation de warp, revenir au village
+    
+    // 2. Attendre que le StarWarp soit complètement visible (500ms de transition)
+    //    AVANT de cacher la page de contenu
     setTimeout(() => {
-      setIsWarping(false);
-    }, 1500);
+      // 3. Maintenant que le StarWarp couvre l'écran, on peut cacher la page
+      setShowContentPage(false);
+      
+      // 4. Continuer l'animation warp un peu, puis la désactiver
+      setTimeout(() => {
+        setIsWarping(false);
+      }, 800);
+    }, 500);
   }, []);
 
   // Écouter la touche E pour retourner au village depuis une page de contenu
@@ -214,8 +232,8 @@ function AppContent() {
           right: 0,
           bottom: 0,
           zIndex: 100,
-          opacity: isWarping ? 0 : 1,
-          transition: 'opacity 0.5s ease'
+          opacity: 1, // Always visible, StarWarp covers it during transition
+          animation: 'fadeIn 0.5s ease-out' // Add subtle fade in for the content itself
         }}>
           <ContentPage
             zoneType={currentZone}

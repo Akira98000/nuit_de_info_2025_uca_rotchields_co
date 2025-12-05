@@ -114,7 +114,7 @@ const StarWarp = ({ isActive }: StarWarpProps) => {
                 left: 0,
                 width: '100%',
                 height: '100%',
-                zIndex: isActive ? 200 : -2, // Bring to front when warping
+                zIndex: 200, // Always on top
                 pointerEvents: 'none',
                 opacity: isActive ? 1 : 0, // Hide when not active (or keep as background if desired)
                 transition: 'opacity 0.5s ease',

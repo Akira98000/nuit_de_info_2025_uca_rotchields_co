@@ -62,11 +62,17 @@ const ThreeScene = ({ onOpenPage, initialPosition, isHome = false }: ThreeSceneP
     const snackbarSchoolRef = useRef<HTMLDivElement | null>(null);
     const snackbarLibraryRef = useRef<HTMLDivElement | null>(null);
     const onOpenPageRef = useRef(onOpenPage);
+    const isHomeRef = useRef(isHome);
 
     // Mettre à jour la référence quand le callback change
     useEffect(() => {
         onOpenPageRef.current = onOpenPage;
     }, [onOpenPage]);
+
+    // Mettre à jour la référence quand isHome change
+    useEffect(() => {
+        isHomeRef.current = isHome;
+    }, [isHome]);
 
     useEffect(() => {
         if (!mountRef.current) return;
@@ -679,7 +685,7 @@ const ThreeScene = ({ onOpenPage, initialPosition, isHome = false }: ThreeSceneP
             }
 
             if (player) {
-                if (isHome) {
+                if (isHomeRef.current) {
                     const time = clock.getElapsedTime() * 0.1;
                     const radius = 3;
                     const height = 3;

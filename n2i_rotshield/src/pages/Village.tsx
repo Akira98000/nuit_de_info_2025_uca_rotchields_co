@@ -56,7 +56,7 @@ const Village = ({ visitedZones, scores, isWarping }: VillageProps) => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 // Transparent background to show the map behind
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                backgroundColor: '#000000',
                 color: 'white',
                 flexDirection: 'column',
                 padding: '2rem',
