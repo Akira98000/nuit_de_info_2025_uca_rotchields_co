@@ -15,6 +15,7 @@ type ZoneType = 'google' | 'cabane' | 'school' | 'library';
 interface ThreeSceneProps {
     onOpenPage?: (position: PlayerPosition, zoneType: ZoneType) => void;
     initialPosition?: PlayerPosition | null;
+    isHome?: boolean;
 }
 
 // Zone interactive "Google Company"
@@ -49,7 +50,7 @@ const LIBRARY_ZONE = {
     maxZ: 6.30
 };
 
-const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
+const ThreeScene = ({ onOpenPage, initialPosition, isHome = false }: ThreeSceneProps) => {
     const mountRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<THREE.Object3D | null>(null);
     const isInZoneRef = useRef(false);
@@ -678,115 +679,134 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
             }
 
             if (player) {
-                const isMoving = keys.ArrowUp || keys.ArrowDown;
+                if (isHome) {
+                    const time = clock.getElapsedTime() * 0.1;
+                    const radius = 3;
+                    const height = 3;
 
-                if (isMoving && runAction) {
-                    switchAnimation(runAction);
-                } else if (!isMoving && idleAction) {
-                    switchAnimation(idleAction);
-                }
+                    const targetPos = new THREE.Vector3(
+                        Math.sin(time) * radius,
+                        height,
+                        Math.cos(time) * radius
+                    );
 
-                if (keys.ArrowUp) {
-                    const newPosition = player.position.clone();
-                    newPosition.x -= Math.sin(player.rotation.y) * moveSpeed;
-                    newPosition.z -= Math.cos(player.rotation.y) * moveSpeed;
+                    camera.position.lerp(targetPos, 0.05);
+                    camera.lookAt(30, 0, 30);
 
-                    // Vérifier la collision avant de déplacer
-                    if (!checkCollision(newPosition)) {
-                        player.position.copy(newPosition);
-                    } else {
-                        // Essayer de glisser le long des murs (sliding)
-                        const slideX = player.position.clone();
-                        slideX.x -= Math.sin(player.rotation.y) * moveSpeed;
+                    if (idleAction) {
+                        switchAnimation(idleAction);
+                    }
+                } else {
+                    const isMoving = keys.ArrowUp || keys.ArrowDown;
 
-                        const slideZ = player.position.clone();
-                        slideZ.z -= Math.cos(player.rotation.y) * moveSpeed;
+                    if (isMoving && runAction) {
+                        switchAnimation(runAction);
+                    } else if (!isMoving && idleAction) {
+                        switchAnimation(idleAction);
+                    }
 
-                        if (!checkCollision(slideX)) {
-                            player.position.x = slideX.x;
-                        } else if (!checkCollision(slideZ)) {
-                            player.position.z = slideZ.z;
+                    if (keys.ArrowUp) {
+                        const newPosition = player.position.clone();
+                        newPosition.x -= Math.sin(player.rotation.y) * moveSpeed;
+                        newPosition.z -= Math.cos(player.rotation.y) * moveSpeed;
+
+                        // Vérifier la collision avant de déplacer
+                        if (!checkCollision(newPosition)) {
+                            player.position.copy(newPosition);
+                        } else {
+                            // Essayer de glisser le long des murs (sliding)
+                            const slideX = player.position.clone();
+                            slideX.x -= Math.sin(player.rotation.y) * moveSpeed;
+
+                            const slideZ = player.position.clone();
+                            slideZ.z -= Math.cos(player.rotation.y) * moveSpeed;
+
+                            if (!checkCollision(slideX)) {
+                                player.position.x = slideX.x;
+                            } else if (!checkCollision(slideZ)) {
+                                player.position.z = slideZ.z;
+                            }
                         }
                     }
-                }
-                if (keys.ArrowDown) {
-                    const newPosition = player.position.clone();
-                    newPosition.x += Math.sin(player.rotation.y) * moveSpeed;
-                    newPosition.z += Math.cos(player.rotation.y) * moveSpeed;
+                    if (keys.ArrowDown) {
+                        const newPosition = player.position.clone();
+                        newPosition.x += Math.sin(player.rotation.y) * moveSpeed;
+                        newPosition.z += Math.cos(player.rotation.y) * moveSpeed;
 
-                    // Vérifier la collision avant de déplacer
-                    if (!checkCollision(newPosition)) {
-                        player.position.copy(newPosition);
-                    } else {
-                        // Essayer de glisser le long des murs (sliding)
-                        const slideX = player.position.clone();
-                        slideX.x += Math.sin(player.rotation.y) * moveSpeed;
+                        // Vérifier la collision avant de déplacer
+                        if (!checkCollision(newPosition)) {
+                            player.position.copy(newPosition);
+                        } else {
+                            // Essayer de glisser le long des murs (sliding)
+                            const slideX = player.position.clone();
+                            slideX.x += Math.sin(player.rotation.y) * moveSpeed;
 
-                        const slideZ = player.position.clone();
-                        slideZ.z += Math.cos(player.rotation.y) * moveSpeed;
+                            const slideZ = player.position.clone();
+                            slideZ.z += Math.cos(player.rotation.y) * moveSpeed;
 
-                        if (!checkCollision(slideX)) {
-                            player.position.x = slideX.x;
-                        } else if (!checkCollision(slideZ)) {
-                            player.position.z = slideZ.z;
+                            if (!checkCollision(slideX)) {
+                                player.position.x = slideX.x;
+                            } else if (!checkCollision(slideZ)) {
+                                player.position.z = slideZ.z;
+                            }
                         }
                     }
-                }
 
-                if (keys.ArrowLeft) {
-                    player.rotation.y += rotationSpeed;
-                }
-                if (keys.ArrowRight) {
-                    player.rotation.y -= rotationSpeed;
-                }
+                    if (keys.ArrowLeft) {
+                        player.rotation.y += rotationSpeed;
+                    }
+                    if (keys.ArrowRight) {
+                        player.rotation.y -= rotationSpeed;
+                    }
 
-                const rotatedOffset = cameraOffset.clone();
-                rotatedOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rotation.y);
+                    const rotatedOffset = cameraOffset.clone();
+                    rotatedOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rotation.y);
 
-                // Position cible de la caméra
-                const targetCameraPos = player.position.clone().add(rotatedOffset);
+                    // Position cible de la caméra
+                    const targetCameraPos = player.position.clone().add(rotatedOffset);
 
-                // Interpolation douce de la caméra (lerp)
-                camera.position.lerp(targetCameraPos, 0.1);
+                    // Interpolation douce de la caméra (lerp)
+                    camera.position.lerp(targetCameraPos, 0.1);
 
-                // La caméra regarde le player
-                const lookAtTarget = player.position.clone().add(cameraLookOffset);
-                camera.lookAt(lookAtTarget);
+                    // La caméra regarde le player
+                    const lookAtTarget = player.position.clone().add(cameraLookOffset);
+                    camera.lookAt(lookAtTarget);
 
-                // Vérifier si le joueur est dans la zone "Google Company"
-                const inZone = checkGoogleCompanyZone(player.position);
-                // Toujours mettre à jour la snackbar pour garantir la synchronisation
-                updateSnackbar(inZone);
-                if (inZone !== isInZoneRef.current) {
-                    isInZoneRef.current = inZone;
-                    console.log('Zone Google Company:', inZone ? 'ENTRÉ' : 'SORTI');
-                }
+                    // Vérifier si le joueur est dans la zone "Google Company"
+                    const inZone = checkGoogleCompanyZone(player.position);
+                    // Toujours mettre à jour la snackbar pour garantir la synchronisation
+                    updateSnackbar(inZone);
+                    if (inZone !== isInZoneRef.current) {
+                        isInZoneRef.current = inZone;
+                        console.log('Zone Google Company:', inZone ? 'ENTRÉ' : 'SORTI');
+                    }
 
-                // Vérifier si le joueur est dans la zone "Cabane"
-                const inCabaneZone = checkCabaneZone(player.position);
-                // Toujours mettre à jour la snackbar pour garantir la synchronisation
-                updateSnackbarCabane(inCabaneZone);
-                if (inCabaneZone !== isInCabaneZoneRef.current) {
-                    isInCabaneZoneRef.current = inCabaneZone;
-                    console.log('Zone Cabane:', inCabaneZone ? 'ENTRÉ' : 'SORTI');
-                }
+                    // Vérifier si le joueur est dans la zone "Cabane"
+                    const inCabaneZone = checkCabaneZone(player.position);
+                    // Toujours mettre à jour la snackbar pour garantir la synchronisation
+                    updateSnackbarCabane(inCabaneZone);
+                    if (inCabaneZone !== isInCabaneZoneRef.current) {
+                        isInCabaneZoneRef.current = inCabaneZone;
+                        console.log('Zone Cabane:', inCabaneZone ? 'ENTRÉ' : 'SORTI');
+                    }
 
-                // Vérifier si le joueur est dans la zone "School"
-                const inSchoolZone = checkSchoolZone(player.position);
-                // Toujours mettre à jour la snackbar pour garantir la synchronisation
-                updateSnackbarSchool(inSchoolZone);
-                if (inSchoolZone !== isInSchoolZoneRef.current) {
-                    isInSchoolZoneRef.current = inSchoolZone;
-                    console.log('Zone School:', inSchoolZone ? 'ENTRÉ' : 'SORTI');
-                }
+                    // Vérifier si le joueur est dans la zone "School"
+                    const inSchoolZone = checkSchoolZone(player.position);
+                    // Toujours mettre à jour la snackbar pour garantir la synchronisation
+                    updateSnackbarSchool(inSchoolZone);
+                    if (inSchoolZone !== isInSchoolZoneRef.current) {
+                        isInSchoolZoneRef.current = inSchoolZone;
+                        console.log('Zone School:', inSchoolZone ? 'ENTRÉ' : 'SORTI');
+                    }
 
-                // Vérifier si le joueur est dans la zone "Library"
-                const inLibraryZone = checkLibraryZone(player.position);
-                // Toujours mettre à jour la snackbar pour garantir la synchronisation
-                updateSnackbarLibrary(inLibraryZone);
-                if (inLibraryZone !== isInLibraryZoneRef.current) {
-                    isInLibraryZoneRef.current = inLibraryZone;
-                    console.log('Zone Library:', inLibraryZone ? 'ENTRÉ' : 'SORTI');
+                    // Vérifier si le joueur est dans la zone "Library"
+                    const inLibraryZone = checkLibraryZone(player.position);
+                    // Toujours mettre à jour la snackbar pour garantir la synchronisation
+                    updateSnackbarLibrary(inLibraryZone);
+                    if (inLibraryZone !== isInLibraryZoneRef.current) {
+                        isInLibraryZoneRef.current = inLibraryZone;
+                        console.log('Zone Library:', inLibraryZone ? 'ENTRÉ' : 'SORTI');
+                    }
                 }
             }
 

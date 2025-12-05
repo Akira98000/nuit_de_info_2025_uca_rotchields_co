@@ -6,18 +6,19 @@
   width: 100%;
   padding: 1.5rem 3rem;
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   z-index: 100;
   background: transparent;
-  /* Clean look */
 }
 
 .nav-logo {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--color-text-primary);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #ffffff;
   letter-spacing: -0.5px;
+  text-align: left;
 }
 
 .nav-links {
@@ -28,12 +29,12 @@
 .nav-link {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: #ffffff;
   transition: color var(--transition-speed);
 }
 
 .nav-link:hover {
-  color: var(--color-text-primary);
+  color: var(--color-accent);
 }
 
 /* Background Slider */
@@ -82,9 +83,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 0 2rem;
+  align-items: flex-start;
+  text-align: left;
+  padding: 0 4rem;
   position: relative;
   z-index: 10;
 }
@@ -94,18 +95,18 @@
   font-weight: 700;
   margin-bottom: 1.5rem;
   letter-spacing: -2px;
-  color: var(--color-text-primary);
+  color: #ffffff;
   line-height: 1.1;
+  font-family: 'Inter', sans-serif;
 }
 
 .typewriter-container {
   font-size: 1.5rem;
   font-weight: 400;
-  color: var(--color-text-secondary);
+  color: #ffffff;
   margin-bottom: 4rem;
   height: 2rem;
-  font-family: var(--font-main);
-  /* Consistent font */
+  font-family: 'Inter', sans-serif;
 }
 
 .cursor {
@@ -137,6 +138,7 @@
   background-color: var(--color-accent);
   border-radius: 50px;
   transition: transform 0.2s ease, opacity 0.2s ease;
+  align-self: flex-start;
 }
 
 .cta-button:hover {
@@ -148,6 +150,32 @@
   transform: scale(0.98);
 }
 
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.home-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .navbar {
@@ -155,7 +183,13 @@
   }
 
   .nav-logo {
-    font-size: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .hero {
+    align-items: center;
+    text-align: center;
+    padding: 0 2rem;
   }
 
   .hero-title {
@@ -164,5 +198,16 @@
 
   .typewriter-container {
     font-size: 1.1rem;
+  }
+
+  .cta-button {
+    align-self: center;
+  }
+
+  .footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    padding: 1rem;
   }
 }

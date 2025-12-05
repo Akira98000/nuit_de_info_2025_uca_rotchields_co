@@ -1,83 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ThreeScene from '../components/ThreeScene';
-import type { PlayerPosition, ZoneType } from '../components/ThreeScene';
-import StarWarp from '../components/StarWarp';
+import type { ZoneType } from '../components/ThreeScene';
 import '../App.css';
 
-// Import des pages
-import GooglePage from './GooglePage';
-import CabanePage from './CabanePage';
-import SchoolPage from './SchoolPage';
-import LibraryPage from './LibraryPage';
+interface VillageProps {
+    visitedZones: Set<ZoneType>;
+    scores: Record<string, number>;
+    isWarping: boolean;
+}
 
-// Composant qui affiche la bonne page selon le type de zone
-// Composant qui affiche la bonne page selon le type de zone
-const ContentPage = ({
-    zoneType,
-    onBack,
-    onVisit,
-    onScore
-}: {
-    zoneType: ZoneType;
-    onBack: () => void;
-    onVisit: (zone: ZoneType) => void;
-    onScore: (zone: ZoneType, score: number) => void;
-}) => {
-    switch (zoneType) {
-        case 'google':
-            return <GooglePage onBack={onBack} onVisit={() => onVisit('google')} onScore={(score) => onScore('google', score)} />;
-        case 'cabane':
-            return <CabanePage onBack={onBack} onVisit={() => onVisit('cabane')} onScore={(score) => onScore('cabane', score)} />;
-        case 'school':
-            return <SchoolPage onBack={onBack} onVisit={() => onVisit('school')} onScore={(score) => onScore('school', score)} />;
-        case 'library':
-            return <LibraryPage onBack={onBack} onVisit={() => onVisit('library')} onScore={(score) => onScore('library', score)} />;
-        default:
-            return <GooglePage onBack={onBack} onVisit={() => onVisit('google')} onScore={(score) => onScore('google', score)} />;
-    }
-};
-
-const Village = () => {
+const Village = ({ visitedZones, scores, isWarping }: VillageProps) => {
     const navigate = useNavigate();
     const [step, setStep] = useState(0);
     const [showScene, setShowScene] = useState(false);
 
-    // État pour la page de contenu
-    const [isWarping, setIsWarping] = useState(false);
-    const [showContentPage, setShowContentPage] = useState(false);
-    const [savedPosition, setSavedPosition] = useState<PlayerPosition | null>(null);
-    const [currentZone, setCurrentZone] = useState<ZoneType>('google');
-
-    // État pour les objectifs et le score
-    const [visitedZones, setVisitedZones] = useState<Set<ZoneType>>(new Set());
-    const [scores, setScores] = useState<Record<string, number>>({});
+    const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+    const allZonesVisited = visitedZones.size >= 4; // google, cabane, school, library
 
     // Gestion du retour au home
     const handleGoHome = useCallback(() => {
-        setIsWarping(true);
-        setTimeout(() => {
-            navigate('/');
-        }, 2000);
+        navigate('/');
     }, [navigate]);
-
-    const handleVisit = (zone: ZoneType) => {
-        setVisitedZones(prev => {
-            const newSet = new Set(prev);
-            newSet.add(zone);
-            return newSet;
-        });
-    };
-
-    const handleScore = (zone: ZoneType, score: number) => {
-        setScores(prev => ({
-            ...prev,
-            [zone]: score
-        }));
-    };
-
-    const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
-    const allZonesVisited = visitedZones.size >= 4; // google, cabane, school, library
 
     useEffect(() => {
         const sequence = async () => {
@@ -105,45 +48,6 @@ const Village = () => {
         setStep(7); // Scene fade in
     };
 
-    // Gestion de l'ouverture de la page (stable avec useCallback)
-    const handleOpenPage = useCallback((position: PlayerPosition, zoneType: ZoneType) => {
-        console.log('Opening page from position:', position, 'Zone:', zoneType);
-        setSavedPosition(position);
-        setCurrentZone(zoneType);
-        setIsWarping(true);
-
-        // Après l'animation de warp, afficher la page
-        setTimeout(() => {
-            setShowContentPage(true);
-            setIsWarping(false);
-        }, 2000);
-    }, []);
-
-    // Gestion du retour au village
-    const handleBackToVillage = useCallback(() => {
-        setIsWarping(true);
-        setShowContentPage(false);
-
-        // Après l'animation de warp, revenir au village
-        setTimeout(() => {
-            setIsWarping(false);
-        }, 1500);
-    }, []);
-
-    // Écouter la touche E pour retourner au village depuis une page de contenu
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.code === 'KeyE' && showContentPage && !isWarping) {
-                handleBackToVillage();
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [showContentPage, isWarping, handleBackToVillage]);
-
     if (!showScene) {
         return (
             <div style={{
@@ -151,12 +55,15 @@ const Village = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: '#000000',
+                // Transparent background to show the map behind
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
                 color: 'white',
                 flexDirection: 'column',
                 padding: '2rem',
                 textAlign: 'center',
-                transition: 'opacity 1s ease-in-out'
+                transition: 'opacity 1s ease-in-out',
+                position: 'relative',
+                zIndex: 10
             }}>
                 {/* Text 1 */}
                 <h1 style={{
@@ -166,7 +73,8 @@ const Village = () => {
                     opacity: step === 1 ? 1 : 0,
                     transition: 'opacity 1s ease-in-out',
                     position: 'absolute',
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    textShadow: '0 2px 10px rgba(0,0,0,0.8)'
                 }}>
                     Vous êtes l’étudiant chargé de protéger votre école face aux Big Tech.
                 </h1>
@@ -179,7 +87,8 @@ const Village = () => {
                     opacity: step === 3 ? 1 : 0,
                     transition: 'opacity 1s ease-in-out',
                     position: 'absolute',
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    textShadow: '0 2px 10px rgba(0,0,0,0.8)'
                 }}>
                     Votre mission : explorer le village, comprendre la démarche NIRD et renforcer l’autonomie numérique de votre établissement.
                 </h1>
@@ -198,15 +107,16 @@ const Village = () => {
                     width: '90%'
                 }}>
                     <div style={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
                         border: '1px solid white',
                         borderRadius: '15px',
                         padding: '2rem',
-                        backdropFilter: 'blur(5px)',
+                        backdropFilter: 'blur(10px)',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '1.5rem',
-                        width: '100%'
+                        width: '100%',
+                        pointerEvents: 'auto'
                     }}>
                         <h2 style={{ fontSize: '2rem', marginBottom: '1rem', textAlign: 'center' }}>Contrôles</h2>
 
@@ -239,7 +149,8 @@ const Village = () => {
                         textAlign: 'center',
                         fontSize: '1.2rem',
                         lineHeight: '1.6',
-                        maxWidth: '800px'
+                        maxWidth: '800px',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.8)'
                     }}>
                         <p>
                             Le Village Résistant vous attend.
@@ -282,32 +193,8 @@ const Village = () => {
 
     return (
         <>
-            {/* Animation StarWarp */}
-            <StarWarp isActive={isWarping} />
-
-            {/* Page de contenu */}
-            {showContentPage && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    zIndex: 100,
-                    opacity: isWarping ? 0 : 1,
-                    transition: 'opacity 0.5s ease'
-                }}>
-                    <ContentPage
-                        zoneType={currentZone}
-                        onBack={handleBackToVillage}
-                        onVisit={handleVisit}
-                        onScore={handleScore}
-                    />
-                </div>
-            )}
-
             {/* Bouton retour Home en bas à gauche */}
-            {showScene && !showContentPage && !isWarping && (
+            {showScene && !isWarping && (
                 <button
                     onClick={handleGoHome}
                     style={{
@@ -345,7 +232,7 @@ const Village = () => {
             )}
 
             {/* UI Overlay - Objectifs et Score */}
-            {showScene && !showContentPage && !isWarping && (
+            {showScene && !isWarping && (
                 <div style={{
                     position: 'absolute',
                     top: '2rem',
@@ -405,18 +292,6 @@ const Village = () => {
                     )}
                 </div>
             )}
-
-            {/* Scène 3D */}
-            <div style={{
-                opacity: (step === 7 && !showContentPage && !isWarping) ? 1 : 0,
-                transition: 'opacity 0.5s ease-in',
-                pointerEvents: showContentPage ? 'none' : 'auto'
-            }}>
-                <ThreeScene
-                    onOpenPage={handleOpenPage}
-                    initialPosition={savedPosition}
-                />
-            </div>
         </>
     );
 };
