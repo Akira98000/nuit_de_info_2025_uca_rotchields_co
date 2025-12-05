@@ -30,13 +30,33 @@ const CABANE_ZONE = {
     maxZ: -4.62
 };
 
+// Zone interactive "School"
+const SCHOOL_ZONE = {
+    minX: 6.74,
+    maxX: 11.5,
+    minZ: 2.91,
+    maxZ: 8.23
+};
+
+// Zone interactive "Library"
+const LIBRARY_ZONE = {
+    minX: -12.61,
+    maxX: -8.01,
+    minZ: 4.54,
+    maxZ: 6.30
+};
+
 const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
     const mountRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<THREE.Object3D | null>(null);
     const isInZoneRef = useRef(false);
     const isInCabaneZoneRef = useRef(false);
+    const isInSchoolZoneRef = useRef(false);
+    const isInLibraryZoneRef = useRef(false);
     const snackbarRef = useRef<HTMLDivElement | null>(null);
     const snackbarCabaneRef = useRef<HTMLDivElement | null>(null);
+    const snackbarSchoolRef = useRef<HTMLDivElement | null>(null);
+    const snackbarLibraryRef = useRef<HTMLDivElement | null>(null);
     const onOpenPageRef = useRef(onOpenPage);
     
     // Mettre à jour la référence quand le callback change
@@ -147,6 +167,56 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
         mountRef.current.appendChild(snackbarCabane);
         snackbarCabaneRef.current = snackbarCabane;
 
+        // ============================================
+        // SNACKBAR POUR LA ZONE "SCHOOL"
+        // ============================================
+        const snackbarSchool = document.createElement('div');
+        snackbarSchool.style.position = 'absolute';
+        snackbarSchool.style.bottom = '30px';
+        snackbarSchool.style.left = '50%';
+        snackbarSchool.style.transform = 'translateX(-50%) translateY(100px)';
+        snackbarSchool.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+        snackbarSchool.style.color = '#ffffff';
+        snackbarSchool.style.padding = '16px 32px';
+        snackbarSchool.style.borderRadius = '12px';
+        snackbarSchool.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        snackbarSchool.style.fontSize = '18px';
+        snackbarSchool.style.fontWeight = '500';
+        snackbarSchool.style.zIndex = '1000';
+        snackbarSchool.style.pointerEvents = 'none';
+        snackbarSchool.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+        snackbarSchool.style.opacity = '0';
+        snackbarSchool.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+        snackbarSchool.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+        snackbarSchool.innerHTML = '🏫 Appuyez sur <span style="color: #FFD700; font-weight: bold;">E</span> pour entrer à l\'École';
+        mountRef.current.appendChild(snackbarSchool);
+        snackbarSchoolRef.current = snackbarSchool;
+
+        // ============================================
+        // SNACKBAR POUR LA ZONE "LIBRARY"
+        // ============================================
+        const snackbarLibrary = document.createElement('div');
+        snackbarLibrary.style.position = 'absolute';
+        snackbarLibrary.style.bottom = '30px';
+        snackbarLibrary.style.left = '50%';
+        snackbarLibrary.style.transform = 'translateX(-50%) translateY(100px)';
+        snackbarLibrary.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+        snackbarLibrary.style.color = '#ffffff';
+        snackbarLibrary.style.padding = '16px 32px';
+        snackbarLibrary.style.borderRadius = '12px';
+        snackbarLibrary.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        snackbarLibrary.style.fontSize = '18px';
+        snackbarLibrary.style.fontWeight = '500';
+        snackbarLibrary.style.zIndex = '1000';
+        snackbarLibrary.style.pointerEvents = 'none';
+        snackbarLibrary.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+        snackbarLibrary.style.opacity = '0';
+        snackbarLibrary.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+        snackbarLibrary.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+        snackbarLibrary.innerHTML = '📚 Appuyez sur <span style="color: #FFD700; font-weight: bold;">E</span> pour entrer à la Bibliothèque';
+        mountRef.current.appendChild(snackbarLibrary);
+        snackbarLibraryRef.current = snackbarLibrary;
+
         // Fonction pour vérifier si le joueur est dans la zone "Google Company"
         const checkGoogleCompanyZone = (position: THREE.Vector3): boolean => {
             return position.x >= GOOGLE_COMPANY_ZONE.minX &&
@@ -161,6 +231,22 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                    position.x <= CABANE_ZONE.maxX &&
                    position.z >= CABANE_ZONE.minZ &&
                    position.z <= CABANE_ZONE.maxZ;
+        };
+
+        // Fonction pour vérifier si le joueur est dans la zone "School"
+        const checkSchoolZone = (position: THREE.Vector3): boolean => {
+            return position.x >= SCHOOL_ZONE.minX &&
+                   position.x <= SCHOOL_ZONE.maxX &&
+                   position.z >= SCHOOL_ZONE.minZ &&
+                   position.z <= SCHOOL_ZONE.maxZ;
+        };
+
+        // Fonction pour vérifier si le joueur est dans la zone "Library"
+        const checkLibraryZone = (position: THREE.Vector3): boolean => {
+            return position.x >= LIBRARY_ZONE.minX &&
+                   position.x <= LIBRARY_ZONE.maxX &&
+                   position.z >= LIBRARY_ZONE.minZ &&
+                   position.z <= LIBRARY_ZONE.maxZ;
         };
 
         // Fonction pour afficher/masquer la snackbar
@@ -185,6 +271,32 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                 } else {
                     snackbarCabane.style.transform = 'translateX(-50%) translateY(100px)';
                     snackbarCabane.style.opacity = '0';
+                }
+            }
+        };
+
+        // Fonction pour afficher/masquer la snackbar School
+        const updateSnackbarSchool = (show: boolean) => {
+            if (snackbarSchool) {
+                if (show) {
+                    snackbarSchool.style.transform = 'translateX(-50%) translateY(0)';
+                    snackbarSchool.style.opacity = '1';
+                } else {
+                    snackbarSchool.style.transform = 'translateX(-50%) translateY(100px)';
+                    snackbarSchool.style.opacity = '0';
+                }
+            }
+        };
+
+        // Fonction pour afficher/masquer la snackbar Library
+        const updateSnackbarLibrary = (show: boolean) => {
+            if (snackbarLibrary) {
+                if (show) {
+                    snackbarLibrary.style.transform = 'translateX(-50%) translateY(0)';
+                    snackbarLibrary.style.opacity = '1';
+                } else {
+                    snackbarLibrary.style.transform = 'translateX(-50%) translateY(100px)';
+                    snackbarLibrary.style.opacity = '0';
                 }
             }
         };
@@ -562,6 +674,30 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                 };
                 onOpenPageRef.current(currentPosition);
             }
+            
+            // Gestion de la touche E pour ouvrir la page (School)
+            if (event.code === 'KeyE' && isInSchoolZoneRef.current && onOpenPageRef.current && player) {
+                console.log('Touche E pressée dans la zone School!');
+                const currentPosition: PlayerPosition = {
+                    x: player.position.x,
+                    y: player.position.y,
+                    z: player.position.z,
+                    rotationY: player.rotation.y
+                };
+                onOpenPageRef.current(currentPosition);
+            }
+            
+            // Gestion de la touche E pour ouvrir la page (Library)
+            if (event.code === 'KeyE' && isInLibraryZoneRef.current && onOpenPageRef.current && player) {
+                console.log('Touche E pressée dans la zone Library!');
+                const currentPosition: PlayerPosition = {
+                    x: player.position.x,
+                    y: player.position.y,
+                    z: player.position.z,
+                    rotationY: player.rotation.y
+                };
+                onOpenPageRef.current(currentPosition);
+            }
         };
 
         const onKeyUp = (event: KeyboardEvent) => {
@@ -685,6 +821,24 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                     isInCabaneZoneRef.current = inCabaneZone;
                     console.log('Zone Cabane:', inCabaneZone ? 'ENTRÉ' : 'SORTI');
                 }
+
+                // Vérifier si le joueur est dans la zone "School"
+                const inSchoolZone = checkSchoolZone(player.position);
+                // Toujours mettre à jour la snackbar pour garantir la synchronisation
+                updateSnackbarSchool(inSchoolZone);
+                if (inSchoolZone !== isInSchoolZoneRef.current) {
+                    isInSchoolZoneRef.current = inSchoolZone;
+                    console.log('Zone School:', inSchoolZone ? 'ENTRÉ' : 'SORTI');
+                }
+
+                // Vérifier si le joueur est dans la zone "Library"
+                const inLibraryZone = checkLibraryZone(player.position);
+                // Toujours mettre à jour la snackbar pour garantir la synchronisation
+                updateSnackbarLibrary(inLibraryZone);
+                if (inLibraryZone !== isInLibraryZoneRef.current) {
+                    isInLibraryZoneRef.current = inLibraryZone;
+                    console.log('Zone Library:', inLibraryZone ? 'ENTRÉ' : 'SORTI');
+                }
             }
 
             renderer.render(scene, camera);
@@ -719,6 +873,12 @@ const ThreeScene = ({ onOpenPage, initialPosition }: ThreeSceneProps) => {
                 }
                 if (snackbarCabane) {
                     mountRef.current.removeChild(snackbarCabane);
+                }
+                if (snackbarSchool) {
+                    mountRef.current.removeChild(snackbarSchool);
+                }
+                if (snackbarLibrary) {
+                    mountRef.current.removeChild(snackbarLibrary);
                 }
             }
 
