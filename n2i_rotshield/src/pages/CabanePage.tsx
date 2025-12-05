@@ -1,8 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BackButton } from './PageComponents';
 import './CabanePage.css';
 
-const CabanePage = ({ onBack }: { onBack: () => void }) => {
+interface CabanePageProps {
+    onBack: () => void;
+    onVisit: () => void;
+    onScore: (score: number) => void;
+}
+
+const CabanePage = ({ onBack, onVisit, onScore }: CabanePageProps) => {
+    useEffect(() => {
+        onVisit();
+    }, [onVisit]);
     // Game State
     const [gameAnswer, setGameAnswer] = useState<string | null>(null);
     const [gameScore, setGameScore] = useState(0);
@@ -16,6 +25,7 @@ const CabanePage = ({ onBack }: { onBack: () => void }) => {
         setGameAnswer(choice);
         if (choice === 'linux') {
             setGameScore(10);
+            onScore(10);
         }
     };
 
@@ -24,8 +34,14 @@ const CabanePage = ({ onBack }: { onBack: () => void }) => {
         setQuizAnswers(newAnswers);
 
         // Check if correct to add score (simplified logic)
-        if (questionId === 1 && answer === 'Linux') setQuizScore(prev => prev + 10);
-        if (questionId === 2 && answer === 'Nextcloud') setQuizScore(prev => prev + 10);
+        if (questionId === 1 && answer === 'Linux') {
+            setQuizScore(prev => prev + 10);
+            onScore(10);
+        }
+        if (questionId === 2 && answer === 'Nextcloud') {
+            setQuizScore(prev => prev + 10);
+            onScore(10);
+        }
     };
 
     return (

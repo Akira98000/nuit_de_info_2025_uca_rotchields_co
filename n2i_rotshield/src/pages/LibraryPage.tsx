@@ -1,8 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BackButton } from './PageComponents';
 import './LibraryPage.css';
 
-const LibraryPage = ({ onBack }: { onBack: () => void }) => {
+interface LibraryPageProps {
+    onBack: () => void;
+    onVisit: () => void;
+    onScore: (score: number) => void;
+}
+
+const LibraryPage = ({ onBack, onVisit, onScore }: LibraryPageProps) => {
+    useEffect(() => {
+        onVisit();
+    }, [onVisit]);
     // Game State
     const [gameAnswer, setGameAnswer] = useState<string | null>(null);
     const [gameScore, setGameScore] = useState(0);
@@ -16,6 +25,7 @@ const LibraryPage = ({ onBack }: { onBack: () => void }) => {
         setGameAnswer(choice);
         if (choice === 'nextcloud') {
             setGameScore(10);
+            onScore(10);
         }
     };
 
@@ -24,6 +34,7 @@ const LibraryPage = ({ onBack }: { onBack: () => void }) => {
         setQuizAnswer(choice);
         if (choice === 'local') {
             setQuizScore(10);
+            onScore(10);
         }
     };
 

@@ -1,8 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BackButton } from './PageComponents';
 import './SchoolPage.css';
 
-const SchoolPage = ({ onBack }: { onBack: () => void }) => {
+interface SchoolPageProps {
+    onBack: () => void;
+    onVisit: () => void;
+    onScore: (score: number) => void;
+}
+
+const SchoolPage = ({ onBack, onVisit, onScore }: SchoolPageProps) => {
+    useEffect(() => {
+        onVisit();
+    }, [onVisit]);
     const [quizAnswers, setQuizAnswers] = useState<{ [key: number]: string }>({});
     const [showScore, setShowScore] = useState(false);
 
@@ -12,6 +21,7 @@ const SchoolPage = ({ onBack }: { onBack: () => void }) => {
 
         if (Object.keys(newAnswers).length === 2) {
             setShowScore(true);
+            onScore(10);
         }
     };
 

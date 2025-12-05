@@ -1,8 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BackButton } from './PageComponents';
 import './GooglePage.css';
 
-const GooglePage = ({ onBack }: { onBack: () => void }) => {
+interface GooglePageProps {
+    onBack: () => void;
+    onVisit: () => void;
+    onScore: (score: number) => void;
+}
+
+const GooglePage = ({ onBack, onVisit, onScore }: GooglePageProps) => {
+    useEffect(() => {
+        onVisit();
+    }, [onVisit]);
     // Game State
     const [gameAnswer, setGameAnswer] = useState<string | null>(null);
     const [showGameResult, setShowGameResult] = useState(false);
@@ -22,6 +31,7 @@ const GooglePage = ({ onBack }: { onBack: () => void }) => {
         setQuizAnswer(choice);
         if (choice === 'hors_ue') {
             setQuizScore(20);
+            onScore(20);
         }
     };
 
